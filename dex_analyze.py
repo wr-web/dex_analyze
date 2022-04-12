@@ -144,14 +144,7 @@ class MyDex(DexFile):
         self.dex_class_refs = DexClassDefs(dex_bytes, self.class_defs_off, self.class_defs_size,self.dex_string_ids.string_list, self.dex_type_ids.type_list)
         self.dex_map_list   = DexMapList  (dex_bytes, self.map_off)
 
-        self.dex_header.show_me()
-        self.dex_string_ids.show_me()
-        self.dex_type_ids.show_me()
-        self.dex_proto_ids.show_me()
-        self.dex_field_ids.show_me()
-        self.dex_method_ids.show_me()
-        self.dex_class_refs.show_me()
-        self.dex_map_list.show_me()
+
 
     def show_me(self):
         pass
@@ -371,9 +364,49 @@ class DexMapList(MyDex):
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser(description = 'purpose: analyze dex',epilog = 'information end')
-    args.add_argument('-a', '--analyze' , type = str, dest = 'dex_path'  , help='input file path')
-    args = args = args.parse_args()
+    args.add_argument('-i', type=str, dest='dex_path'  , help='input file path')
+    args.add_argument('--all', action='store_true', dest='all' , help='show all')
+    args.add_argument('--header', action='store_true', dest='header', help='show header')
+    args.add_argument('--string', action='store_true', dest='string', help='show string')
+    args.add_argument('--type', action='store_true', dest='type', help='show type')
+    args.add_argument('--proto', action='store_true', dest='proto', help='show proto')
+    args.add_argument('--field', action='store_true', dest='field', help='show field')
+    args.add_argument('--method', action='store_true', dest='method', help='show method')
+    args.add_argument('--class', action='store_true', dest='class', help='show class')
+    args.add_argument('--map', action='store_true', dest='map', help='show map')
+    
+    args = args.parse_args()
+    if not vars(args)['dex_path']:
+        print('Plz Input Dex Path')
+        exit(1)
+
     with open(vars(args)['dex_path'], 'rb') as f:
         data = f.read()
-        header = MyDex(data)
-    
+        dex = MyDex(data)
+        if vars(args)['all']:
+            dex.dex_header.show_me()
+            dex.dex_string_ids.show_me()
+            dex.dex_type_ids.show_me()
+            dex.dex_proto_ids.show_me()
+            dex.dex_field_ids.show_me()
+            dex.dex_method_ids.show_me()
+            dex.dex_class_refs.show_me()
+            dex.dex_map_list.show_me()
+        else:
+            if vars(args)['header']:
+                dex.dex_header.show_me()
+            if vars(args)['string']:
+                dex.dex_string_ids.show_me()
+            if vars(args)['type']:
+                dex.dex_string_ids.show_me()
+            if vars(args)['proto']:
+                dex.dex_string_ids.show_me()
+            if vars(args)['field']:
+                dex.dex_string_ids.show_me()
+            if vars(args)['method']:
+                dex.dex_string_ids.show_me()
+            if vars(args)['class']:
+                dex.dex_string_ids.show_me()
+            if vars(args)['map']:
+                dex.dex_string_ids.show_me()
+        
