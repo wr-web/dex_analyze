@@ -398,15 +398,15 @@ if __name__ == '__main__':
             if vars(args)['string']:
                 dex.dex_string_ids.show_me()
             if vars(args)['type']:
-                dex.dex_string_ids.show_me()
+                dex.dex_type_ids.show_me()
             if vars(args)['proto']:
-                dex.dex_string_ids.show_me()
+                dex.dex_proto_ids.show_me()
             if vars(args)['field']:
-                dex.dex_string_ids.show_me()
+                dex.dex_field_ids.show_me()
             if vars(args)['method']:
-                dex.dex_string_ids.show_me()
+                dex.dex_method_ids.show_me()
             if vars(args)['class']:
-                dex.dex_string_ids.show_me()
+                dex.dex_class_refs.show_me()
             if vars(args)['map']:
-                dex.dex_string_ids.show_me()
+                dex.dex_map_list.show_me()
         
