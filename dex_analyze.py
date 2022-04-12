@@ -1,4 +1,7 @@
 import argparse
+from inspect import signature
+import zlib
+import hashlib
 
 '''
 Dex file format:
@@ -145,7 +148,6 @@ class MyDex(DexFile):
         self.dex_map_list   = DexMapList  (dex_bytes, self.map_off)
 
 
-
     def show_me(self):
         pass
 
@@ -155,7 +157,7 @@ class DexHeader(MyDex):
         
         self.magic           = self.dd(0x0, 0x8)
         self.checksum        = self.le(0x8, 0x4)    # Alder32 checksum
-        self.signature       = self.be(0xC,0x14)    # SHA-1 signature
+        self.signature       = self.dd(0xC,0x14)    # SHA-1 signature
         self.file_size       = self.le(0x20,0x4)    # entire file
         self.header_size     = self.le(0x24,0x4)    # off to start of next section
         self.endian_tag      = self.dd(0x28,0x4)
@@ -202,6 +204,47 @@ class DexHeader(MyDex):
         print('class_defs_off:'.ljust(18, ' '),self.class_defs_off)
         print('data_size:'.ljust(18, ' '),self.data_size)
         print('data_off:'.ljust(18, ' '),self.data_off)
+    
+    def my_checksum(self, dex_bytes):
+        '''
+        Adler-32
+        '''
+        # varA = 1
+        # varB = 0
+        # for i in dex_bytes[0xC:]:
+        #     varA = (varA + i) % 65521
+        #     varB = (varA + varB) % 65521
+        # checksum = (varB << 16) + varA
+
+        checksum = zlib.adler32(dex_bytes[0xC:])
+        # print('-'*0x50)
+        # print('MY CHECKSUM:'.ljust(18, ' '),checksum)
+        # print('-'*0x50)
+        return checksum
+    
+    def my_signature(self, dex_bytes):
+        '''
+        sha1 to signature
+        '''
+        sigdata = dex_bytes[0x20:]
+        sha1 = hashlib.sha1()
+        sha1.update(sigdata)
+        sha2 = sha1.digest()
+        # print('-'*0x50)
+        # print('MY SIGNATURE:'.ljust(18, ' '),sha2)
+        # print('-'*0x50)
+        return sha2
+    
+    def fix_signature_checksum(self, dex_bytes):
+        signature = self.my_signature(dex_bytes)
+        checksum  = zlib.adler32(signature+dex_bytes[0x20:])
+        # MAY USED
+        # new_dex_bytes = dex_bytes[:0x8] + checksum + signature
+        print('-'*0x50)
+        print('NEW CHECKSUM:'.ljust(18, ' '),checksum)
+        print('NEW SIGNATURE:'.ljust(18, ' '),signature)
+        print('-'*0x50)
+        
 
     
 
@@ -374,6 +417,9 @@ if __name__ == '__main__':
     args.add_argument('--method', action='store_true', dest='method', help='show method')
     args.add_argument('--class', action='store_true', dest='class', help='show class')
     args.add_argument('--map', action='store_true', dest='map', help='show map')
+    args.add_argument('--checksum', action='store_true', dest='checksum', help='checksum')
+    args.add_argument('--signature', action='store_true', dest='signature', help='signature')
+    args.add_argument('--fix', action='store_true', dest='fix', help='fix checksum && signature')
     
     args = args.parse_args()
     if not vars(args)['dex_path']:
@@ -409,4 +455,9 @@ if __name__ == '__main__':
                 dex.dex_class_refs.show_me()
             if vars(args)['map']:
                 dex.dex_map_list.show_me()
-        
+            if vars(args)['checksum']:
+                dex.dex_header.my_checksum(data)
+            if vars(args)['signature']:
+                dex.dex_header.my_signature(data)
+            if vars(args)['fix']:
+                dex.dex_header.fix_signature_checksum(data)
