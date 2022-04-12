@@ -5,7 +5,8 @@ analyze dex structure
 ## usage
 
 ```shell
-usage:python3 dex_analyze.py [-h] [-i DEX_PATH] [--all] [--header] [--string] [--type] [--proto] [--field] [--method] [--class] [--map]
+usage: dex_analyze.py [-h] [-i DEX_PATH] [--all] [--header] [--string] [--type] [--proto] [--field] [--method] [--class] [--map]
+                      [--checksum] [--signature] [--fix]
 
 purpose: analyze dex
 
@@ -21,6 +22,9 @@ optional arguments:
   --method     show method
   --class      show class
   --map        show map
+  --checksum   checksum
+  --signature  signature
+  --fix        fix checksum && signature
 
 information end
 ```

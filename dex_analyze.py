@@ -423,7 +423,7 @@ if __name__ == '__main__':
     
     args = args.parse_args()
     if not vars(args)['dex_path']:
-        print('Plz Input Dex Path')
+        print('Usage:python3 dex_analyze.py -h')
         exit(1)
 
     with open(vars(args)['dex_path'], 'rb') as f:
